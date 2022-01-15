@@ -86,18 +86,20 @@ function addImages(param) {
     var objXMLHttpRequest = new XMLHttpRequest();
     objXMLHttpRequest.onreadystatechange = function() {
     if(objXMLHttpRequest.readyState === 4) {
-        if(objXMLHttpRequest.status === 200) {
+        response = JSON.parse(objXMLHttpRequest.responseText)
+        if(objXMLHttpRequest.status === 200 & response.success) {
             $('body').toast({
                 class: 'success',
                 showIcon: false,
-                message: 'Imágenes guardas con éxito: '+ objXMLHttpRequest.responseText
+                message: 'Imágenes guardas con éxito: '+ response.message
             });
+            document.querySelector('form').reset()
             showImages();
         } else {
             $('body').toast({
                 class: 'error',
                 showIcon: false,
-                message: 'Error: '+objXMLHttpRequest.status+' ' +objXMLHttpRequest.statusText
+                message: 'Error: '+objXMLHttpRequest.status+' ' +response.message
             });
         }
     }
