@@ -20,6 +20,9 @@ window.addEventListener("load", function(){
                     showIcon: false,
                     message: 'La imagen '+ file.name +' no es tipo JPG'
                 });
+                if(files.length == 1){
+                    document.querySelector('form').reset();
+                }
                 
             } else{ 
                 promises.push(new Promise(function (resolve, reject) {
@@ -93,9 +96,10 @@ function addImages(param) {
                 showIcon: false,
                 message: 'Imágenes guardas con éxito: '+ response.message
             });
-            document.querySelector('form').reset()
+            document.querySelector('form').reset();
             showImages();
         } else {
+            document.querySelector('form').reset();
             $('body').toast({
                 class: 'error',
                 showIcon: false,
