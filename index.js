@@ -12,25 +12,40 @@ window.addEventListener("load", function(){
         const promises = []
 
         for (let file of files) {
-
-            promises.push(new Promise(function (resolve, reject) {
-                new Compressor(file, {
-                    quality: 0.6,
-                    success(result) {
-                        formData.append('files[]', result, result.name)
-                        resolve()
-                    },
-                    error(err) {
-                        console.log(err.message)
-                        reject()
-                    },
-                })
-            }))
-
+            var filePath = file.name;
+            var allowed = /(.jpg)$/i;
+            if(!allowed.exec(filePath)){
+                $('body').toast({
+                    class: 'error',
+                    showIcon: false,
+                    message: 'La imagen '+ file.name +' no es tipo JPG'
+                });
+                
+            } else{ 
+                promises.push(new Promise(function (resolve, reject) {
+                    new Compressor(file, {
+                        quality: 0.6,
+                        success(result) {
+                            formData.append('files[]', result, result.name)
+                            resolve()
+                        },
+                        error(err) {
+                            $('body').toast({
+                                class: 'error',
+                                showIcon: false,
+                                message: 'Error Compressor: '+ err.message
+                            });
+                            reject()
+                        },
+                    })
+                }))
+            }
         }
-        Promise.all(promises).then(function () {
-            addImages(formData);
-        })
+        if (promises.length > 0){
+            Promise.all(promises).then(function () {
+                addImages(formData);
+            })
+        }
 
     })
 
@@ -55,8 +70,11 @@ function showImages() {
 
             }
         } else {
-            alert('Error Code: ' +  objXMLHttpRequest.status);
-            alert('Error Message: ' + objXMLHttpRequest.statusText);
+            $('body').toast({
+                class: 'error',
+                showIcon: false,
+                message: 'Error: '+objXMLHttpRequest.status+' ' +objXMLHttpRequest.statusText
+            });
         }
     }
     }
@@ -69,11 +87,18 @@ function addImages(param) {
     objXMLHttpRequest.onreadystatechange = function() {
     if(objXMLHttpRequest.readyState === 4) {
         if(objXMLHttpRequest.status === 200) {
-            console.log(objXMLHttpRequest.responseText);
-            location.reload();
+            $('body').toast({
+                class: 'success',
+                showIcon: false,
+                message: 'Imágenes guardas con éxito: '+ objXMLHttpRequest.responseText
+            });
+            showImages();
         } else {
-            alert('Error Code: ' +  objXMLHttpRequest.status);
-            alert('Error Message: ' + objXMLHttpRequest.statusText);
+            $('body').toast({
+                class: 'error',
+                showIcon: false,
+                message: 'Error: '+objXMLHttpRequest.status+' ' +objXMLHttpRequest.statusText
+            });
         }
     }
     }
